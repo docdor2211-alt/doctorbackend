@@ -3,8 +3,8 @@
 const Doctor =
   require("../models/doctorModel");
 
-const admin =
-  require("../config/firebase");
+// const admin =
+  // require("../config/firebase");
 
 const bcrypt =
   require("bcryptjs");

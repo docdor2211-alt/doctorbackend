@@ -1,15 +1,15 @@
-const admin =
-  require("firebase-admin");
+// const admin =
+//   require("firebase-admin");
 
-const serviceAccount =
-  require("../firebase-service-account.json");
+// const serviceAccount =
+//   require("../firebase-service-account.json");
 
-admin.initializeApp({
-  credential:
-    admin.credential.cert(
-      serviceAccount
-    ),
-});
+// admin.initializeApp({
+//   credential:
+//     admin.credential.cert(
+//       serviceAccount
+//     ),
+// });
 
-module.exports =
-  admin;
+// module.exports =
+//   admin;
