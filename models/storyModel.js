@@ -57,6 +57,12 @@ const storySchema =
 
       },
 
+      expiresAt: {
+        type: Date,
+        required: true,
+        index: true,
+      },
+
     },
 
     {
