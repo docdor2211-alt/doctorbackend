@@ -1,23 +1,12 @@
-// routes/doctorRoutes.js
+const express = require("express");
 
-const express =
-  require("express");
+const router = express.Router();
 
-const router =
-  express.Router();
+const multer = require("multer");
 
-const multer =
-  require("multer");
-
-const path =
-  require("path");
-
-/* =========================
-   CONTROLLERS
-========================= */
+const path = require("path");
 
 const {
-
   registerDoctor,
 
   loginDoctor,
@@ -27,201 +16,112 @@ const {
   updateDoctorProfile,
 
   googleLoginDoctor,
+} = require("../controllers/doctorController");
 
-} = require(
-  "../controllers/doctorController"
-);
+const { protect } = require("../middleware/authMiddleware");
 
-/* =========================
-   MIDDLEWARE
-========================= */
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
 
-const {
-  protect,
-} = require(
-  "../middleware/authMiddleware"
-);
+  filename: function (req, file, cb) {
+    cb(
+      null,
 
-/* =========================
-   MULTER STORAGE
-========================= */
+      Date.now() + path.extname(file.originalname),
+    );
+  },
+});
 
-const storage =
-  multer.diskStorage({
-
-    destination:
-      function (
-        req,
-        file,
-        cb
-      ) {
-
-        cb(
-          null,
-          "uploads/"
-        );
-
-      },
-
-    filename:
-      function (
-        req,
-        file,
-        cb
-      ) {
-
-        cb(
-
-          null,
-
-          Date.now() +
-
-            path.extname(
-              file.originalname
-            )
-
-        );
-
-      },
-
-  });
-
-/* =========================
-   MULTER
-========================= */
-
-const upload =
-  multer({
-    storage,
-  });
-
-/* =====================================================
-   👨‍⚕️ REGISTER DOCTOR
-===================================================== */
+const upload = multer({
+  storage,
+});
 
 router.post(
-
   "/register",
 
   upload.fields([
-
     {
-      name:
-        "doctorImagePath",
+      name: "doctorImagePath",
 
       maxCount: 1,
     },
 
     {
-      name:
-        "clinicImagePath",
+      name: "clinicImagePath",
 
       maxCount: 1,
     },
 
     {
-      name:
-        "medicalLicenseCopy",
+      name: "medicalLicenseCopy",
 
       maxCount: 1,
     },
 
     {
-      name:
-        "idProof",
+      name: "idProof",
 
       maxCount: 1,
     },
-
   ]),
 
-  registerDoctor
-
+  registerDoctor,
 );
 
-/* =====================================================
-   🔐 LOGIN DOCTOR
-===================================================== */
-
 router.post(
-
   "/login",
 
-  loginDoctor
-
+  loginDoctor,
 );
-
-/* =====================================================
-   🔥 GOOGLE LOGIN
-===================================================== */
 
 router.post(
-
   "/google-login",
 
-  googleLoginDoctor
-
+  googleLoginDoctor,
 );
 
-/* =====================================================
-   👨‍⚕️ GET PROFILE
-===================================================== */
-
 router.get(
-
   "/profile",
 
   protect,
 
-  getDoctorProfile
-
+  getDoctorProfile,
 );
 
-/* =====================================================
-   ✏️ UPDATE PROFILE
-===================================================== */
-
 router.put(
-
   "/update-profile",
 
   protect,
 
   upload.fields([
-
     {
-      name:
-        "doctorImagePath",
+      name: "doctorImagePath",
 
       maxCount: 1,
     },
 
     {
-      name:
-        "clinicImagePath",
+      name: "clinicImagePath",
 
       maxCount: 1,
     },
 
     {
-      name:
-        "medicalLicenseCopy",
+      name: "medicalLicenseCopy",
 
       maxCount: 1,
     },
 
     {
-      name:
-        "idProof",
+      name: "idProof",
 
       maxCount: 1,
     },
-
   ]),
 
-  updateDoctorProfile
-
+  updateDoctorProfile,
 );
 
-module.exports =
-  router;
+module.exports = router;
