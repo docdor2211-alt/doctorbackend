@@ -9,6 +9,9 @@ const DocsidePrescription =
     "../models/docsidePrescriptionModel"
   );
 
+require("../models/onlineSymptomModel");
+require("../models/pharmacyProductModel");
+
 
 
 /* =====================================================
@@ -254,40 +257,95 @@ exports.getPatientCompleteCase =
 
 
 
-              // ================= PRESCRIPTION =================
+              // ================= VITALS =================
+              vitals: {
+                weight:
+                  prescription?.vitalSigns?.weight ||
+                  appointment.weight ||
+                  "",
+                temperature:
+                  prescription?.vitalSigns?.temperature ||
+                  appointment.temperature ||
+                  "",
+                pulse:
+                  prescription?.vitalSigns?.pulse ||
+                  appointment.pulse ||
+                  "",
+                bloodPressure:
+                  prescription?.vitalSigns?.bloodPressure ||
+                  appointment.bloodPressure ||
+                  "",
+                spO2:
+                  prescription?.vitalSigns?.spO2 ||
+                  appointment.spO2 ||
+                  "",
+              },
 
+              // ================= CLINICAL DETAILS =================
+              clinicalDetails: {
+                complaints:
+                  prescription?.complaints?.length > 0
+                    ? prescription.complaints
+                    : prescription?.chiefComplaints
+                    ? [prescription.chiefComplaints]
+                    : appointment.reason
+                    ? [appointment.reason]
+                    : [],
+                patientHistory:
+                  prescription?.patientHistory || "",
+                diagnosis:
+                  prescription?.diagnosis ||
+                  prescription?.provisionalDiagnosis ||
+                  "",
+                examinationFindings:
+                  prescription?.examinationFindings || "",
+                clinicalNotes:
+                  prescription?.clinicalNotes || "",
+                labInvestigations:
+                  prescription?.labInvestigations || [],
+                dietaryAdvice:
+                  prescription?.dietaryAdvice || {
+                    itemsToEat: [],
+                    itemsToAvoid: [],
+                    lifestyleAdvice:
+                      prescription?.dietaryInstructions || "",
+                    notes: "",
+                  },
+                services:
+                  prescription?.services || [],
+              },
+
+              // ================= PRESCRIPTION =================
               prescription:
                 prescription || null,
 
-
-
               // ================= MEDICINES =================
-
               medicines:
-                prescription?.medicines || [],
+                (prescription?.medicines || []).map((m) => ({
+                  productId: m.productId,
+                  medicineName: m.medicineName || m.name || m.productTitle || "",
+                  dosage: m.dosage || "",
+                  timeSlots: m.timeSlots || {},
+                  slots: m.slots || [],
+                  instruction: m.instruction || m.instructions || "",
+                  duration: m.duration || "",
+                  frequency: m.frequency || "",
+                  instructions: m.instructions || "",
+                })),
 
-
-
-              // ================= DIAGNOSIS =================
-
+              // ================= DIAGNOSIS (Top-level alias) =================
               diagnosis:
-                prescription?.provisionalDiagnosis || "",
-
-
+                prescription?.diagnosis ||
+                prescription?.provisionalDiagnosis ||
+                "",
 
               // ================= NOTES =================
-
               clinicalNotes:
                 prescription?.clinicalNotes || "",
 
-
-
               // ================= LAB TESTS =================
-
               labInvestigations:
                 prescription?.labInvestigations || [],
-
-
 
               createdAt:
                 appointment.createdAt,

@@ -1,63 +1,72 @@
-
-
-
 const express = require("express");
-
 const router = express.Router();
 
-
-// ================= CONTROLLERS =================
-
 const {
-
   getMyPrescriptions,
-
   getSinglePrescription,
-
-} = require(
-  "../controllers/prescriptionController"
-);
-
-
-// ================= MIDDLEWARE =================
+} = require("../controllers/prescriptionController");
 
 const {
+  createPrescription,
+  getAllMedicines,
+  getPrescriptionByAppointment,
+  updatePrescription,
+  deletePrescription,
+  getComplaints,
+  createComplaint,
+  getClinicServices,
+  createClinicService,
+  createTemplate,
+  getTemplates,
+  getTemplateById,
+  updateTemplate,
+  deleteTemplate,
+  getPrescriptionSettings,
+  updatePrescriptionSettings,
+} = require("../controllers/docsidePrescriptionController");
 
-  protect,
+const { protect } = require("../middleware/authMiddleware");
 
-} = require(
-  "../middleware/authMiddleware"
-);
+/* =====================================================
+   ⚙️ PRESCRIPTION SETTINGS
+===================================================== */
+router.get("/settings", protect, getPrescriptionSettings);
+router.put("/settings", protect, updatePrescriptionSettings);
 
+/* =====================================================
+   🩺 COMPLAINTS DROPDOWN & CUSTOM COMPLAINT CREATION
+===================================================== */
+router.get("/complaints", protect, getComplaints);
+router.post("/complaints", protect, createComplaint);
 
-// =====================================================
-// ============ GET MY PRESCRIPTIONS ===================
-// =====================================================
+/* =====================================================
+   💊 MEDICINES MASTER SEARCH & DROPDOWN
+===================================================== */
+router.get("/medicines", protect, getAllMedicines);
 
-router.get(
+/* =====================================================
+   💉 CLINIC SERVICES & PROCEDURES CATALOG
+===================================================== */
+router.get("/services", protect, getClinicServices);
+router.post("/services", protect, createClinicService);
 
-  "/my",
+/* =====================================================
+   📋 ILLNESS TEMPLATES (Pre-saved templates e.g. "Fever")
+===================================================== */
+router.post("/templates", protect, createTemplate);
+router.get("/templates", protect, getTemplates);
+router.get("/templates/:id", protect, getTemplateById);
+router.put("/templates/:id", protect, updateTemplate);
+router.delete("/templates/:id", protect, deleteTemplate);
 
-  protect,
-
-  getMyPrescriptions
-);
-
-
-// =====================================================
-// ============ GET SINGLE PRESCRIPTION ================
-// =====================================================
-
-router.get(
-
-  "/:id",
-
-  protect,
-
-  getSinglePrescription
-);
-
-
-// ================= EXPORT =================
+/* =====================================================
+   🩺 PRESCRIPTIONS
+===================================================== */
+router.post("/", protect, createPrescription);
+router.get("/my", protect, getMyPrescriptions);
+router.get("/appointment/:appointmentId", protect, getPrescriptionByAppointment);
+router.get("/:id", protect, getSinglePrescription);
+router.put("/:id", protect, updatePrescription);
+router.delete("/:id", protect, deletePrescription);
 
 module.exports = router;

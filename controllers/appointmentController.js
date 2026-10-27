@@ -73,11 +73,12 @@ exports.updateVitals =
     try {
 
       const {
-
         bloodPressure,
         weight,
         temperature,
-
+        pulse,
+        spO2,
+        spo2,
       } = req.body;
 
 
@@ -121,16 +122,21 @@ exports.updateVitals =
 
       // ✅ UPDATE VITALS
       appointment.bloodPressure =
-        bloodPressure ||
-        appointment.bloodPressure;
+        bloodPressure !== undefined ? bloodPressure : appointment.bloodPressure;
 
       appointment.weight =
-        weight ||
-        appointment.weight;
+        weight !== undefined ? weight : appointment.weight;
 
       appointment.temperature =
-        temperature ||
-        appointment.temperature;
+        temperature !== undefined ? temperature : appointment.temperature;
+
+      appointment.pulse =
+        pulse !== undefined ? pulse : appointment.pulse;
+
+      appointment.spO2 =
+        (spO2 !== undefined ? spO2 : spo2) !== undefined
+          ? (spO2 !== undefined ? spO2 : spo2)
+          : appointment.spO2;
 
 
       await appointment.save();

@@ -221,7 +221,87 @@ exports.getUserFullMedicalHistory =
           symptomsMap.values()
         );
 
+      // =================================================
+      // MEDICAL TIMELINE (Vitals, Clinical Details, Medicines)
+      // =================================================
 
+      const medicalTimeline = appointments.map((appointment) => {
+        const prescription = prescriptions.find(
+          (p) =>
+            p.appointmentId &&
+            (p.appointmentId._id
+              ? p.appointmentId._id.toString()
+              : p.appointmentId.toString()) === appointment._id.toString()
+        );
+
+        return {
+          appointmentId: appointment._id,
+          date: appointment.date,
+          time: appointment.time,
+          reason: appointment.reason,
+          status: appointment.status,
+          doctor: appointment.doctorId,
+          vitals: {
+            weight:
+              prescription?.vitalSigns?.weight ||
+              appointment.weight ||
+              "",
+            temperature:
+              prescription?.vitalSigns?.temperature ||
+              appointment.temperature ||
+              "",
+            pulse:
+              prescription?.vitalSigns?.pulse ||
+              appointment.pulse ||
+              "",
+            bloodPressure:
+              prescription?.vitalSigns?.bloodPressure ||
+              appointment.bloodPressure ||
+              "",
+            spO2:
+              prescription?.vitalSigns?.spO2 ||
+              appointment.spO2 ||
+              "",
+          },
+          clinicalDetails: {
+            complaints:
+              prescription?.complaints?.length > 0
+                ? prescription.complaints
+                : prescription?.chiefComplaints
+                ? [prescription.chiefComplaints]
+                : appointment.reason
+                ? [appointment.reason]
+                : [],
+            patientHistory: prescription?.patientHistory || "",
+            diagnosis:
+              prescription?.diagnosis ||
+              prescription?.provisionalDiagnosis ||
+              "",
+            examinationFindings: prescription?.examinationFindings || "",
+            clinicalNotes: prescription?.clinicalNotes || "",
+            labInvestigations: prescription?.labInvestigations || [],
+            dietaryAdvice: prescription?.dietaryAdvice || {
+              itemsToEat: [],
+              itemsToAvoid: [],
+              lifestyleAdvice: prescription?.dietaryInstructions || "",
+              notes: "",
+            },
+            services: prescription?.services || [],
+          },
+          medicines: (prescription?.medicines || []).map((m) => ({
+            productId: m.productId,
+            medicineName: m.medicineName || m.name || m.productTitle || "",
+            dosage: m.dosage || "",
+            timeSlots: m.timeSlots || {},
+            slots: m.slots || [],
+            instruction: m.instruction || m.instructions || "",
+            duration: m.duration || "",
+            frequency: m.frequency || "",
+          })),
+          prescription: prescription || null,
+          createdAt: appointment.createdAt,
+        };
+      });
 
       // =================================================
       // RESPONSE
@@ -257,6 +337,8 @@ exports.getUserFullMedicalHistory =
 
 
           // ALL DATA
+          medicalTimeline,
+
           appointments,
 
           prescriptions,

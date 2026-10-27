@@ -561,3 +561,199 @@ exports.updateDoctorProfile =
     }
 
   };
+
+/* =========================
+   ⚙️ GET DOCTOR SETTINGS
+========================= */
+
+exports.getDoctorSettings = async (req, res) => {
+  try {
+    const doctor = await Doctor.findById(req.doctor._id);
+
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found",
+      });
+    }
+
+    const settings = {
+      consultationPricing: {
+        newConsultationFee: doctor.consultationPricing?.newConsultationFee ?? (doctor.fees || 500),
+        oldConsultationFee: doctor.consultationPricing?.oldConsultationFee ?? 300,
+      },
+      appointmentLength: doctor.appointmentLength ?? 15,
+      newAppointmentThreshold: doctor.newAppointmentThreshold ?? 30,
+      clinicBranding: {
+        logo: doctor.clinicBranding?.logo ?? "",
+        header: doctor.clinicBranding?.header ?? "",
+        footer: doctor.clinicBranding?.footer ?? "",
+      },
+      prescriptionSettings: {
+        isVitalSignsEnabled: doctor.prescriptionSettings?.isVitalSignsEnabled ?? true,
+        isDietaryAdviceEnabled: doctor.prescriptionSettings?.isDietaryAdviceEnabled ?? true,
+      },
+      clinicName: doctor.clinicName || "",
+      address: doctor.address || "",
+    };
+
+    res.status(200).json({
+      success: true,
+      data: settings,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+/* =========================
+   ⚙️ UPDATE DOCTOR SETTINGS
+========================= */
+
+exports.updateDoctorSettings = async (req, res) => {
+  try {
+    const doctor = await Doctor.findById(req.doctor._id);
+
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found",
+      });
+    }
+
+    const {
+      newConsultationFee,
+      oldConsultationFee,
+      appointmentLength,
+      newAppointmentThreshold,
+      logo,
+      header,
+      footer,
+      isVitalSignsEnabled,
+      isDietaryAdviceEnabled,
+      clinicName,
+      address,
+    } = req.body;
+
+    // Pricing
+    if (!doctor.consultationPricing) {
+      doctor.consultationPricing = { newConsultationFee: 500, oldConsultationFee: 300 };
+    }
+    if (newConsultationFee !== undefined) {
+      doctor.consultationPricing.newConsultationFee = Number(newConsultationFee);
+      doctor.fees = Number(newConsultationFee);
+    }
+    if (oldConsultationFee !== undefined) {
+      doctor.consultationPricing.oldConsultationFee = Number(oldConsultationFee);
+    }
+
+    // Appointment Length
+    if (appointmentLength !== undefined) {
+      doctor.appointmentLength = Number(appointmentLength);
+    }
+
+    // New Appointment Threshold
+    if (newAppointmentThreshold !== undefined) {
+      doctor.newAppointmentThreshold = Number(newAppointmentThreshold);
+    }
+
+    // Branding
+    if (!doctor.clinicBranding) {
+      doctor.clinicBranding = { logo: "", header: "", footer: "" };
+    }
+    if (logo !== undefined) doctor.clinicBranding.logo = logo;
+    if (header !== undefined) doctor.clinicBranding.header = header;
+    if (footer !== undefined) doctor.clinicBranding.footer = footer;
+
+    // Prescription Settings
+    if (!doctor.prescriptionSettings) {
+      doctor.prescriptionSettings = { isVitalSignsEnabled: true, isDietaryAdviceEnabled: true };
+    }
+    if (isVitalSignsEnabled !== undefined) {
+      doctor.prescriptionSettings.isVitalSignsEnabled = Boolean(isVitalSignsEnabled);
+    }
+    if (isDietaryAdviceEnabled !== undefined) {
+      doctor.prescriptionSettings.isDietaryAdviceEnabled = Boolean(isDietaryAdviceEnabled);
+    }
+
+    if (clinicName !== undefined) doctor.clinicName = clinicName;
+    if (address !== undefined) doctor.address = address;
+
+    await doctor.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Doctor and clinic settings updated successfully",
+      data: {
+        consultationPricing: doctor.consultationPricing,
+        appointmentLength: doctor.appointmentLength,
+        newAppointmentThreshold: doctor.newAppointmentThreshold,
+        clinicBranding: doctor.clinicBranding,
+        prescriptionSettings: doctor.prescriptionSettings,
+        clinicName: doctor.clinicName,
+        address: doctor.address,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+/* =====================================================
+   🖼️ UPLOAD CLINIC BRANDING (LOGO, HEADER, FOOTER)
+===================================================== */
+
+exports.uploadClinicBranding = async (req, res) => {
+  try {
+    const doctor = await Doctor.findById(req.doctor._id);
+
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found",
+      });
+    }
+
+    if (!doctor.clinicBranding) {
+      doctor.clinicBranding = { logo: "", header: "", footer: "" };
+    }
+
+    const host = `${req.protocol}://${req.get("host")}`;
+
+    if (req.files) {
+      if (req.files.logo && req.files.logo.length > 0) {
+        doctor.clinicBranding.logo = `${host}/uploads/${req.files.logo[0].filename}`;
+      }
+      if (req.files.header && req.files.header.length > 0) {
+        doctor.clinicBranding.header = `${host}/uploads/${req.files.header[0].filename}`;
+      }
+      if (req.files.footer && req.files.footer.length > 0) {
+        doctor.clinicBranding.footer = `${host}/uploads/${req.files.footer[0].filename}`;
+      }
+    }
+
+    // Also support direct URL links in req.body if passed as text/json
+    if (req.body.logo) doctor.clinicBranding.logo = req.body.logo;
+    if (req.body.header) doctor.clinicBranding.header = req.body.header;
+    if (req.body.footer) doctor.clinicBranding.footer = req.body.footer;
+
+    await doctor.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Clinic branding uploaded successfully",
+      data: doctor.clinicBranding,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

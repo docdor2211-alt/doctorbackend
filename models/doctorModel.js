@@ -265,6 +265,55 @@ idProof: {
       default: 0,
     },
 
+    // ================= CLINIC & APPOINTMENT SETTINGS =================
+
+    consultationPricing: {
+      newConsultationFee: {
+        type: Number,
+        default: 500,
+      },
+      oldConsultationFee: {
+        type: Number,
+        default: 300,
+      },
+    },
+
+    appointmentLength: {
+      type: Number,
+      default: 15, // in minutes (e.g., 15min)
+    },
+
+    newAppointmentThreshold: {
+      type: Number,
+      default: 30, // in days
+    },
+
+    clinicBranding: {
+      logo: {
+        type: String,
+        default: "",
+      },
+      header: {
+        type: String,
+        default: "",
+      },
+      footer: {
+        type: String,
+        default: "",
+      },
+    },
+
+    prescriptionSettings: {
+      isVitalSignsEnabled: {
+        type: Boolean,
+        default: true,
+      },
+      isDietaryAdviceEnabled: {
+        type: Boolean,
+        default: true,
+      },
+    },
+
 
 
     // ================= STATUS =================

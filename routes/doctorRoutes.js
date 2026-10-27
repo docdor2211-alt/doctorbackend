@@ -16,6 +16,12 @@ const {
   updateDoctorProfile,
 
   googleLoginDoctor,
+
+  getDoctorSettings,
+
+  updateDoctorSettings,
+
+  uploadClinicBranding,
 } = require("../controllers/doctorController");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -122,6 +128,42 @@ router.put(
   ]),
 
   updateDoctorProfile,
+);
+
+/* =========================
+   ⚙️ DOCTOR & CLINIC SETTINGS
+========================= */
+
+router.get(
+  "/settings",
+  protect,
+  getDoctorSettings
+);
+
+router.put(
+  "/settings",
+  protect,
+  updateDoctorSettings
+);
+
+router.post(
+  "/settings/branding",
+  protect,
+  upload.fields([
+    {
+      name: "logo",
+      maxCount: 1,
+    },
+    {
+      name: "header",
+      maxCount: 1,
+    },
+    {
+      name: "footer",
+      maxCount: 1,
+    },
+  ]),
+  uploadClinicBranding
 );
 
 module.exports = router;

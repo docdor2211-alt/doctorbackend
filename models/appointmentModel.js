@@ -65,6 +65,23 @@ const appointmentSchema =
         default: "",
       },
 
+      pulse: {
+        type: String,
+        default: "",
+      },
+
+      spO2: {
+        type: String,
+        default: "",
+      },
+
+      symptoms: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "OnlineSymptom",
+        },
+      ],
+
       status: {
         type: String,
         enum: [
