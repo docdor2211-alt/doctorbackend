@@ -26,6 +26,20 @@ router.get(
   controller.getDoctorAppointments
 );
 
+// ✅ CREATE APPOINTMENT (doctor / clinic booking)
+router.post(
+  "/",
+  protect,
+  controller.createAppointment
+);
+
+// ✅ UPDATE STATUS (generic)
+router.put(
+  "/:id/status",
+  protect,
+  controller.updateAppointmentStatus
+);
+
 // ✅ RECEIVE SETTLEMENT
 router.put(
   "/settle-payment/:id",

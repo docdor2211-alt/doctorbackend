@@ -3,7 +3,7 @@ const ReportImage =
     "../models/reportImageModel"
   );
   require(
-  "../models/User"
+  "../models/userModel"
 );
 
 

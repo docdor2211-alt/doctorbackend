@@ -55,6 +55,19 @@ router.get(
   controller.getMySchedules
 );
 
+// ✅ GET / UPDATE RECURRING WEEKLY AVAILABILITY
+router.get(
+  "/weekly-availability",
+  protect,
+  controller.getWeeklyAvailability
+);
+
+router.put(
+  "/weekly-availability",
+  protect,
+  controller.updateWeeklyAvailability
+);
+
 
 
 // ✅ GET SINGLE SCHEDULE

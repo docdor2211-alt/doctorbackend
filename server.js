@@ -396,6 +396,16 @@ app.use(
   historyRoutes
 );
 
+app.use(
+  "/api/invoices",
+  require("./routes/invoiceRoutes")
+);
+
+app.use(
+  "/api/patient-contacts",
+  require("./routes/patientContactRoutes")
+);
+
 
 /* =========================
    INVALID ROUTE

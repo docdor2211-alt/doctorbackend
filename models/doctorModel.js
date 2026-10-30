@@ -283,6 +283,19 @@ idProof: {
       default: 15, // in minutes (e.g., 15min)
     },
 
+    weeklyAvailability: {
+      weekdays: {
+        type: [Number],
+        default: undefined,
+      },
+      startMinutes: {
+        type: Number,
+      },
+      endMinutes: {
+        type: Number,
+      },
+    },
+
     newAppointmentThreshold: {
       type: Number,
       default: 30, // in days

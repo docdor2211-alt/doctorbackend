@@ -5,6 +5,66 @@ const DoctorSchedule =
     "../models/doctorScheduleModel"
   );
 
+exports.getWeeklyAvailability = async (req, res) => {
+  try {
+    res.status(200).json({
+      success: true,
+      data: req.doctor.weeklyAvailability || null,
+    });
+  } catch (error) {
+    console.log("GET WEEKLY AVAILABILITY ERROR =>", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.updateWeeklyAvailability = async (req, res) => {
+  try {
+    const { weekdays, startMinutes, endMinutes } = req.body;
+    const validWeekdays =
+      Array.isArray(weekdays) &&
+      weekdays.length > 0 &&
+      weekdays.every(
+        (day) => Number.isInteger(day) && day >= 1 && day <= 7
+      );
+    const validTimes =
+      Number.isInteger(startMinutes) &&
+      Number.isInteger(endMinutes) &&
+      startMinutes >= 0 &&
+      endMinutes <= 1440 &&
+      endMinutes > startMinutes;
+
+    if (!validWeekdays || !validTimes) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Choose valid weekdays and an end time after the start time",
+      });
+    }
+
+    req.doctor.weeklyAvailability = {
+      weekdays: [...new Set(weekdays)],
+      startMinutes,
+      endMinutes,
+    };
+    await req.doctor.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Weekly availability saved successfully",
+      data: req.doctor.weeklyAvailability,
+    });
+  } catch (error) {
+    console.log("UPDATE WEEKLY AVAILABILITY ERROR =>", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 
 
 /* =========================
